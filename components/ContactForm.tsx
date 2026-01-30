@@ -1,6 +1,45 @@
+"use client";
+
 export default function ContactForm() {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    await fetch("https://formspree.io/f/xvzrvvkp", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    // Clear form fields after successful submit
+    form.reset();
+  };
+
   return (
-    <form className="mt-6 sm:mt-8 space-y-5 sm:space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="mt-6 sm:mt-8 space-y-5 sm:space-y-6"
+    >
+      {/* Hidden metadata */}
+      <input
+        type="hidden"
+        name="_subject"
+        value="New Portfolio Inquiry"
+      />
+
+      {/* Honeypot */}
+      <input
+        type="text"
+        name="_gotcha"
+        className="hidden"
+        tabIndex={-1}
+        autoComplete="off"
+      />
+
       {/* Name */}
       <div>
         <label className="block text-xs sm:text-sm bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent mb-2 font-medium">
@@ -8,6 +47,8 @@ export default function ContactForm() {
         </label>
         <input
           type="text"
+          name="name"
+          required
           placeholder="XYZ Kumar"
           className="w-full rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-950/30 to-violet-950/30 border border-indigo-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition"
         />
@@ -20,7 +61,9 @@ export default function ContactForm() {
         </label>
         <input
           type="email"
-          placeholder="XYZ@example.com"
+          name="email"
+          required
+          placeholder="xyz@example.com"
           className="w-full rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-950/30 to-violet-950/30 border border-indigo-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition"
         />
       </div>
@@ -31,7 +74,9 @@ export default function ContactForm() {
           Message <span className="text-red-500">*</span>
         </label>
         <textarea
+          name="message"
           rows={4}
+          required
           placeholder="Tell me about your idea..."
           className="w-full rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-950/30 to-violet-950/30 border border-indigo-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 resize-none transition"
         />
@@ -41,7 +86,7 @@ export default function ContactForm() {
       <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4">
         <button
           type="submit"
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-linear-to-r from-indigo-500 to-violet-600 text-white text-sm sm:text-base font-medium hover:shadow-lg hover:shadow-indigo-500/40 transition"
+          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-linear-to-r from-indigo-500 to-violet-600 text-white text-sm sm:text-base font-medium hover:shadow-lg hover:shadow-indigo-500/40 transition cursor-pointer"
         >
           Send Message
         </button>
