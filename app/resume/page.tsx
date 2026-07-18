@@ -21,7 +21,7 @@ export default function ResumePage() {
             {/* Actions */}
             <div className="flex gap-2 sm:gap-3">
               <a
-                href="/resume/Tushar_Gautam_Resume.pdf"
+                href="/resume/portfolio%20resume.pdf"
                 download
                 className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white text-black text-xs sm:text-sm font-medium hover:bg-neutral-200 transition whitespace-nowrap"
               >
@@ -29,9 +29,9 @@ export default function ResumePage() {
               </a>
 
               <a
-                href="/resume/Tushar_Gautam_Resume.pdf"
+                href="/resume/portfolio%20resume.pdf"
                 target="_blank"
-                className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-neutral-700 text-neutral-300 text-xs sm:text-sm hover:border-neutral-500 hover:text-white transition whitespace-nowrap"
+                className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-neutral-700 text-neutral-700 text-xs sm:text-sm hover:border-neutral-500 hover:text-white transition whitespace-nowrap"
               >
                 Open in New Tab
               </a>
@@ -48,7 +48,7 @@ export default function ResumePage() {
           {/* PDF Viewer */}
           <div className="w-full h-96 sm:h-150 md:h-175 rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900">
             <iframe
-              src="/resume/Tushar_Gautam_Resume.pdf"
+              src="/resume/portfolio%20resume.pdf"
               className="w-full h-full"
               title="Resume Preview"
             />
