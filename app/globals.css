@@ -1,38 +1,865 @@
 @import "tailwindcss";
 
-* {
-  -webkit-tap-highlight-color: transparent;
+/* ---------------------------------------------------------------------------
+   "Ultraviolet Run" — design tokens. DESIGN.md documents them.
+   An ink-violet ground, an electric-violet family for structure and glow,
+   acid lime for anything live (actions, passing tests, signal), coral only
+   for failure. Three families, one job each.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* Ground: the void behind everything, then lifted surfaces */
+  --color-void: #07060d;
+  --color-ground: #0c0a14;
+  --color-raise-1: #13101f;
+  --color-raise-2: #1a1630;
+  --color-raise-3: #241e40;
+
+  /* Ink: cool, faintly violet-tinted whites */
+  --color-ink: #f4f2ff;
+  --color-ink-2: #c9c3e6;
+  --color-ink-3: #948db6;
+
+  /* Violet family: structure, edges, glow. Use violet-soft for violet text. */
+  --color-violet: #7b61ff;
+  --color-violet-hi: #9f8bff;
+  --color-violet-soft: #b9a8ff;
+  --color-violet-deep: #2e2266;
+  --color-violet-dim: rgba(123, 97, 255, 0.16);
+  --color-violet-edge: rgba(150, 128, 255, 0.5);
+
+  /* Acid lime: the live signal. Primary action, pass, pulse. */
+  --color-lime: #d4ff3a;
+  --color-lime-hi: #e6ff85;
+  --color-lime-dim: rgba(212, 255, 58, 0.13);
+
+  /* Coral: failure and regression only */
+  --color-coral: #ff6b57;
+
+  /* Status aliases */
+  --color-pass: #d4ff3a;
+  --color-fail: #ff6b57;
+
+  /* Paper: the printable resume sheet */
+  --color-paper: #fcfbff;
+  --color-paper-ink: #17141f;
+  --color-paper-ink-2: #4a4560;
+  --color-paper-rule: #e3def2;
+  --color-paper-accent: #5a3fd6;
+
+  /* Unlit connections */
+  --color-trace: #2b2452;
+  --color-trace-2: #3d3473;
+
+  --color-line: rgba(196, 184, 255, 0.12);
+  --color-line-strong: rgba(196, 184, 255, 0.24);
+
+  /* Display face with character, a clean reading face, mono for code only */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --text-part: clamp(3.25rem, 7.6vw, 6rem);
+  --text-part--line-height: 0.9;
+  --text-part--letter-spacing: -0.04em;
+
+  --text-h1: clamp(2.5rem, 5vw, 4.25rem);
+  --text-h1--line-height: 0.98;
+  --text-h1--letter-spacing: -0.035em;
+
+  --text-h2: clamp(2.1rem, 4vw, 3.4rem);
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: -0.032em;
+
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.015em;
+
+  --text-lead: clamp(1.1875rem, 1.6vw, 1.375rem);
+  --text-lead--line-height: 1.5;
+  --text-lead--letter-spacing: -0.01em;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.6;
+
+  --text-legend: 0.75rem;
+  --text-legend--line-height: 1.3;
+  --text-legend--letter-spacing: 0.1em;
+
+  --text-mono: 0.8125rem;
+  --text-mono--line-height: 1.55;
+
+  --text-value: clamp(1.6rem, 2.6vw, 2.2rem);
+  --text-value--line-height: 1;
+  --text-value--letter-spacing: -0.03em;
+
+  --radius-card: 22px;
+  --radius-ic: 18px;
+  --radius-pad: 12px;
+
+  --container: 1360px;
+  --space-section: clamp(5rem, 10vw, 8.5rem);
+  --gutter: clamp(1.25rem, 4vw, 2.75rem);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html {
-  scroll-behavior: smooth;
-}
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-body {
-  background-color: #0a0a0a;
-}
-
-/* Responsive text sizing */
-@media (max-width: 640px) {
   html {
-    font-size: 14px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    background-color: var(--color-void);
+    color-scheme: dark;
+    scrollbar-color: var(--color-violet-deep) var(--color-void);
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink-2);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    caret-color: var(--color-lime);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+
+  ::selection {
+    background-color: var(--color-lime);
+    color: var(--color-ground);
+  }
+
+  a {
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+
+  time,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-@media (min-width: 641px) and (max-width: 1024px) {
+@layer components {
+  .shell {
+    margin-inline: auto;
+    max-width: var(--container);
+    padding-inline: var(--gutter);
+  }
+
+  /* Small uppercase label: metadata, never an eyebrow above a heading */
+  .legend {
+    font-family: var(--font-sans);
+    font-size: var(--text-legend);
+    line-height: var(--text-legend--line-height);
+    letter-spacing: var(--text-legend--letter-spacing);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  /* Display voice (Bricolage Grotesque). `.semi-expanded` is the same face
+     at heading scale; the names are kept so components stay stable. */
+  .expanded,
+  .semi-expanded {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+  }
+
+  .expanded {
+    letter-spacing: -0.04em;
+  }
+
+  /* -------------------------------------------------------------------------
+     Atmosphere: a dot field across the page, and one ultraviolet aurora behind
+     the hero. The aurora is the page's only ambient loop.
+     ------------------------------------------------------------------------- */
+  .dot-field {
+    background-image: radial-gradient(rgba(185, 168, 255, 0.11) 1px, transparent 1.2px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+  }
+
+  .aurora {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .aurora-violet {
+    background: radial-gradient(circle, rgba(123, 97, 255, 0.55), rgba(123, 97, 255, 0) 70%);
+    animation: aurora-drift 24s ease-in-out infinite alternate;
+  }
+
+  .aurora-lime {
+    background: radial-gradient(circle, rgba(212, 255, 58, 0.16), rgba(212, 255, 58, 0) 70%);
+    animation: aurora-drift 30s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes aurora-drift {
+    from {
+      transform: translate3d(-4%, -3%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(5%, 4%, 0) scale(1.12);
+    }
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Surface card with a lit top edge and a violet glow when interactive */
+  .card {
+    position: relative;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background:
+      linear-gradient(180deg, rgba(185, 168, 255, 0.05), rgba(185, 168, 255, 0) 40%),
+      var(--color-raise-1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .glow-hover {
+    transition:
+      border-color 220ms ease-out,
+      box-shadow 320ms var(--ease-out-expo),
+      transform 320ms var(--ease-out-expo);
+  }
+
+  .glow-hover:hover {
+    border-color: var(--color-violet-edge);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 24px 60px -24px rgba(123, 97, 255, 0.55);
+  }
+
+  /* Grid-lined panel for the harness and the case-study hero */
+  .grid-panel {
+    background-color: var(--color-raise-1);
+    background-image:
+      linear-gradient(rgba(185, 168, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(185, 168, 255, 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Status light. Lime = pass, coral = fail, violet = live/powered. */
+  .led {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background-color: var(--color-trace-2);
+    transition:
+      background-color 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .led[data-state="pass"] {
+    background-color: var(--color-pass);
+    box-shadow: 0 0 0 3px rgba(212, 255, 58, 0.16), 0 0 14px rgba(212, 255, 58, 0.55);
+  }
+
+  .led[data-state="fail"] {
+    background-color: var(--color-fail);
+    box-shadow: 0 0 0 3px rgba(255, 107, 87, 0.16), 0 0 14px rgba(255, 107, 87, 0.5);
+  }
+
+  .led[data-state="live"] {
+    background-color: var(--color-violet-soft);
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.22), 0 0 14px rgba(123, 97, 255, 0.7);
+  }
+
+  /* -------------------------------------------------------------------------
+     Connections between the work and the harness hub. Unlit they are deep
+     violet; a probed connection carries a lime pulse.
+     ------------------------------------------------------------------------- */
+  .trace {
+    fill: none;
+    stroke: var(--color-trace);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition:
+      stroke 260ms ease-out,
+      opacity 260ms ease-out;
+  }
+
+  .signal {
+    fill: none;
+    stroke: var(--color-lime);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Paths carry pathLength="100": one 12-unit pulse travelling the line */
+    stroke-dasharray: 12 88;
+    stroke-dashoffset: 100;
+    opacity: 0;
+    filter: drop-shadow(0 0 5px rgba(212, 255, 58, 0.8));
+    transition: opacity 200ms ease-out;
+  }
+
+  /* Power-on: connections draw out from the hub once, nodes settle in, their
+     lights blink. Fill mode is backwards so the normal state wins afterwards. */
+  @media (scripting: enabled) {
+    .power-on .trace {
+      stroke-dasharray: 1;
+      animation: trace-draw 900ms var(--ease-out-expo) backwards;
+      animation-delay: calc(var(--i, 0) * 140ms + 200ms);
+    }
+
+    .power-on .ic {
+      animation: ic-seat 760ms var(--ease-out-expo) backwards;
+      animation-delay: calc(var(--i, 0) * 140ms + 480ms);
+    }
+
+    .power-on .ic .led {
+      animation: led-blink 420ms steps(2, jump-none) 2;
+      animation-delay: calc(var(--i, 0) * 140ms + 1100ms);
+    }
+  }
+
+  @keyframes trace-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes ic-seat {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.97);
+      filter: blur(6px);
+    }
+  }
+
+  @keyframes led-blink {
+    0% {
+      background-color: var(--color-violet-soft);
+    }
+    100% {
+      background-color: var(--color-trace-2);
+    }
+  }
+
+  /* Isolation: probing one project mutes the rest. Opacity stays at 0.85 so
+     even ink-3 text keeps about 4.5:1; the desaturation does the rest. */
+  .circuit[data-probe] .ic:not([data-active]),
+  .circuit[data-probe] .trace:not([data-active]) {
+    opacity: 0.85;
+    filter: saturate(0.3);
+  }
+
+  .circuit .trace[data-active] {
+    stroke: var(--color-violet);
+  }
+
+  .circuit .signal[data-active] {
+    opacity: 1;
+    animation: signal-run 1100ms linear infinite;
+  }
+
+  @keyframes signal-run {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .ic {
+    transition:
+      opacity 260ms ease-out,
+      filter 260ms ease-out;
+  }
+
+  /* Scroll progress along the section rail: a scroll timeline, no listener */
+  .bus-fill {
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .bus-fill {
+      animation: bus-fill linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @keyframes bus-fill {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+     Buttons: lime pill (primary), outlined pill (ghost)
+     ------------------------------------------------------------------------- */
+  .pad-btn {
+    position: relative;
+    display: inline-flex;
+    min-height: 2.875rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: 9999px;
+    padding-inline: 1.3rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    transition:
+      background-color 160ms ease-out,
+      border-color 160ms ease-out,
+      color 160ms ease-out,
+      box-shadow 260ms var(--ease-out-expo),
+      transform 160ms var(--ease-out-expo);
+  }
+
+  .pad-btn:active {
+    transform: scale(0.97);
+  }
+
+  .pad-btn[data-variant="lime"] {
+    border: 1px solid var(--color-lime);
+    background-color: var(--color-lime);
+    color: var(--color-ground);
+  }
+
+  .pad-btn[data-variant="lime"]:hover {
+    background-color: var(--color-lime-hi);
+    border-color: var(--color-lime-hi);
+    box-shadow: 0 10px 34px -10px rgba(212, 255, 58, 0.6);
+  }
+
+  .pad-btn[data-variant="ghost"] {
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-ink);
+  }
+
+  .pad-btn[data-variant="ghost"]:hover {
+    border-color: var(--color-violet-edge);
+    background-color: var(--color-violet-dim);
+  }
+
+  .pad-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .ink-link {
+    color: var(--color-ink);
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-line-strong);
+    transition:
+      color 140ms ease-out,
+      text-decoration-color 140ms ease-out;
+  }
+
+  .ink-link:hover {
+    color: var(--color-lime);
+    text-decoration-color: var(--color-lime);
+  }
+
+  /* Work row: a lime line sweeps along the bottom edge on hover/focus */
+  .bom-row::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-violet), var(--color-lime));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 520ms var(--ease-out-expo);
+  }
+
+  .bom-row:hover::after,
+  .bom-row:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Harness stages: base styles live here (not in utilities) so the state
+     rules below can override them. */
+  .stage-pad {
+    border: 1px solid var(--color-trace-2);
+    border-radius: 9999px;
+    background-color: var(--color-ground);
+    transition:
+      background-color 200ms ease-out,
+      border-color 200ms ease-out,
+      box-shadow 200ms ease-out;
+  }
+
+  .stage[data-state="done"] .stage-pad {
+    background-color: var(--color-violet);
+    border-color: var(--color-violet);
+  }
+
+  .stage[data-state="active"] .stage-pad {
+    background-color: var(--color-lime);
+    border-color: var(--color-lime);
+    box-shadow: 0 0 0 5px rgba(212, 255, 58, 0.15), 0 0 22px rgba(212, 255, 58, 0.6);
+  }
+}
+
+@layer components {
+  /* Hero project nodes lean toward the cursor (values fed from Circuit) */
+  .tilt {
+    transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition:
+      transform 380ms var(--ease-out-expo),
+      border-color 300ms ease-out,
+      box-shadow 300ms ease-out;
+    will-change: transform;
+  }
+
+  /* Cursor spotlight: a violet light under the pointer, fed by SpotlightGroup */
+  .spot-card {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .spot-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      22rem circle at var(--mx, 50%) var(--my, 50%),
+      rgba(123, 97, 255, 0.2),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+    pointer-events: none;
+  }
+
+  .spot-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Marquee ribbons: two crossing bands of the pipeline, the verdicts and
+     the work. Content is duplicated once so the loop is seamless. */
+  .ribbon-track {
+    display: flex;
+    width: max-content;
+    animation: ribbon-run var(--ribbon-speed, 38s) linear infinite;
+  }
+
+  .ribbon-track[data-reverse] {
+    animation-direction: reverse;
+  }
+
+  .ribbon:hover .ribbon-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes ribbon-run {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  /* Rotating circular label around the footer action */
+  .orbit-spin {
+    animation: orbit-spin 22s linear infinite;
+    transform-origin: 50% 50%;
+  }
+
+  @keyframes orbit-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Contribution heatmap: cells light up on a diagonal sweep when the grid
+     enters the viewport (the container gets [data-lit]). */
+  .heat-cell {
+    transition:
+      opacity 420ms var(--ease-out-expo),
+      transform 420ms var(--ease-out-expo);
+    transition-delay: calc(var(--d, 0) * 9ms);
+  }
+
+  @media (scripting: enabled) {
+    .heatmap:not([data-lit]) .heat-cell {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+
+  /* Language bar segments grow from the left when revealed */
+  .lang-seg {
+    transform-origin: left center;
+    transition: transform 900ms var(--ease-out-expo);
+    transition-delay: calc(var(--d, 0) * 90ms);
+  }
+
+  @media (scripting: enabled) {
+    .lang-bar:not([data-lit]) .lang-seg {
+      transform: scaleX(0);
+    }
+  }
+}
+
+@layer components {
+  /* Autograph: hidden until its .sig-host is hovered or focused, then each
+     letter's outline traces left to right, inks in, and the flourish sweeps
+     under it. Leaving fades it out; coming back redraws it. */
+  .sig {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+  }
+
+  .sig path {
+    fill: transparent;
+    stroke: var(--sig-ink, var(--color-paper-accent));
+    stroke-width: var(--sig-stroke, 9);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .sig .sig-flourish {
+    stroke-width: var(--sig-flourish-stroke, 26);
+  }
+
+  .sig-host:hover .sig,
+  .sig-host:focus-within .sig {
+    opacity: 1;
+    transition-duration: 120ms;
+  }
+
+  .sig-host:hover .sig .sig-letter,
+  .sig-host:focus-within .sig .sig-letter {
+    animation:
+      sig-trace 520ms cubic-bezier(0.55, 0, 0.35, 1) forwards,
+      sig-ink 380ms ease-out forwards;
+    animation-duration: var(--sig-trace, 520ms), 380ms;
+    animation-delay:
+      calc(var(--i) * var(--sig-step, 95ms)),
+      calc(var(--i) * var(--sig-step, 95ms) + var(--sig-trace, 520ms) - 140ms);
+  }
+
+  .sig-host:hover .sig .sig-flourish,
+  .sig-host:focus-within .sig .sig-flourish {
+    animation: sig-trace 650ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay: calc(var(--i) * var(--sig-step, 95ms) + 150ms);
+  }
+
+  @keyframes sig-trace {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes sig-ink {
+    to {
+      fill: var(--sig-ink, var(--color-paper-accent));
+    }
+  }
+
+  /* The resume sheet */
+  .paper {
+    background-color: var(--color-paper);
+    color: var(--color-paper-ink-2);
+  }
+}
+
+/* Printing the resume: only the sheet, on white, no chrome. Chrome is taken
+   out of layout (display: none), so nothing leaves blank pages behind. */
+@media print {
+  @page {
+    size: A4;
+    margin: 11mm 12mm;
+  }
+
+  html,
+  body,
+  body > div,
+  main {
+    background: #fff !important;
+  }
+
+  nav,
+  footer,
+  .no-print,
+  .grain,
+  .dot-field,
+  .sig,
+  a[href="#main"] {
+    display: none !important;
+  }
+
+  main > .shell {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .paper {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+
+  /* Fit the sheet on one A4 page, like the PDF, and keep the bullet dots */
+  .paper {
+    /* Screen text is larger than print needs; scale it back to the PDF size */
+    zoom: 0.72;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .paper section {
+    margin-top: 1.1rem !important;
+  }
+
+  .paper ul {
+    margin-top: 0.3rem !important;
+  }
+
+  .paper ul > li,
+  .paper dl > div {
+    margin-block: 0 0.15rem !important;
+    line-height: 1.38 !important;
+  }
+
+  .paper header p {
+    margin-top: 0.3rem !important;
+  }
+
+  .paper a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .paper li {
+    break-inside: avoid;
+  }
+
+  /* Headings stay with what follows them */
+  .paper h2 {
+    break-after: avoid;
+  }
+
+  /* A page break never splits a project from its bullets (a long role may
+     flow across pages, bullet by bullet) */
+  .paper .print-keep {
+    break-inside: avoid;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion: no drawing, no running pulse, no aurora drift, no scroll
+   fill. State still changes (muting, lights, colour), because that carries
+   meaning.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
   html {
-    font-size: 15px;
+    scroll-behavior: auto;
+  }
+
+  .power-on .trace,
+  .power-on .ic,
+  .power-on .ic .led {
+    animation: none !important;
+    stroke-dasharray: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .aurora-violet,
+  .aurora-lime {
+    animation: none;
+  }
+
+  .circuit .signal[data-active] {
+    animation: none;
+    stroke-dasharray: none;
+    opacity: 0.9;
+  }
+
+  .bus-fill {
+    animation: none !important;
+    transform: scaleY(1);
+    opacity: 0.35;
+  }
+
+  .bom-row::after,
+  .glow-hover {
+    transition: none;
+  }
+
+  .ribbon-track,
+  .orbit-spin {
+    animation: none;
+  }
+
+  .tilt {
+    transform: none !important;
+  }
+
+  /* The signature still appears on hover, just without the drawing */
+  .sig-host:hover .sig path,
+  .sig-host:focus-within .sig path {
+    animation: none !important;
+    stroke-dashoffset: 0;
+    fill: var(--sig-ink, var(--color-paper-accent));
+  }
+
+  .heat-cell,
+  .lang-seg {
+    transition: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(*) {
+    animation-duration: 1ms !important;
   }
 }
 
-/* Ensure proper touch targets on mobile */
-@media (max-width: 640px) {
-  button,
-  a[role="button"],
-  input,
-  textarea,
-  select {
-    min-height: 44px;
-    min-width: 44px;
-  }
+/* ---------------------------------------------------------------------------
+   Cross-document transitions: a project's node morphs into its case study.
+   --------------------------------------------------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 300ms;
+  animation-timing-function: var(--ease-out-expo);
+}
+
+::view-transition-group(*) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-out-expo);
 }

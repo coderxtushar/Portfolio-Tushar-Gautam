@@ -1,144 +1,116 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  SiCplusplus,
-  SiJavascript,
-  SiPython,
-  SiReact,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiExpress,
-  SiMongodb,
-  SiTailwindcss,
-  SiGithub,
-  SiAmazon,
-  SiDocker,
-  SiKubernetes,
-  SiPostman,
-  SiMysql,
-  SiPostgresql,
-  SiRedis,
-  SiFirebase,
-  SiFastapi,
-} from "react-icons/si";
+import { skillGroups } from "@/lib/data";
+import Block from "./ui/Block";
 
-type Skill = {
-  name: string;
-  icon: any;
-  description: string;
+/* Tile spans on the 6-column grid: the evaluation work gets the featured
+   tile, the rest step down in size so no two rows read alike. */
+const SPAN: Record<string, string> = {
+  "GenAI & agent evaluation": "md:col-span-4",
+  Frontend: "md:col-span-2",
+  "Backend & data": "md:col-span-3",
+  "Infrastructure & tooling": "md:col-span-3",
+  Languages: "md:col-span-6",
 };
 
-const coreSkills: Skill[] = [
-  { name: "C / C++", icon: SiCplusplus, description: "Systems programming" },
-  { name: "JavaScript", icon: SiJavascript, description: "Frontend & backend" },
-  { name: "Python", icon: SiPython, description: "APIs & automation" },
-  { name: "React.js", icon: SiReact, description: "UI development" },
-  { name: "Next.js", icon: SiNextdotjs, description: "Full-stack React" },
-  { name: "Node.js", icon: SiNodedotjs, description: "Server runtime" },
-  { name: "Express.js", icon: SiExpress, description: "Backend framework" },
-  { name: "Tailwind CSS", icon: SiTailwindcss, description: "Utility CSS" },
-];
+const FEATURED = "GenAI & agent evaluation";
 
-const infraSkills: Skill[] = [
-  { name: "MongoDB", icon: SiMongodb, description: "NoSQL database" },
-  { name: "MySQL", icon: SiMysql, description: "Relational DB" },
-  { name: "PostgreSQL", icon: SiPostgresql, description: "Advanced SQL DB" },
-  { name: "Redis", icon: SiRedis, description: "In-memory store" },
-  { name: "Firebase", icon: SiFirebase, description: "Realtime backend" },
-  { name: "FastAPI", icon: SiFastapi, description: "Python APIs" },
-  { name: "Docker", icon: SiDocker, description: "Containers" },
-  { name: "Kubernetes", icon: SiKubernetes, description: "Orchestration" },
-  { name: "AWS (EC2, S3)", icon: SiAmazon, description: "Cloud infra" },
-  { name: "Git / GitHub", icon: SiGithub, description: "Version control" },
-  { name: "Postman", icon: SiPostman, description: "API testing" },
-];
+/* Featured group first, then by span so the grid packs without gaps */
+const ORDER = [FEATURED, "Frontend", "Backend & data", "Infrastructure & tooling", "Languages"];
+const ordered = [...skillGroups].sort(
+  (a, b) => (ORDER.indexOf(a.label) + 99) % 99 - (ORDER.indexOf(b.label) + 99) % 99,
+);
 
-// duplicate array for seamless looping
-const duplicate = (arr: Skill[]) => [...arr, ...arr];
-
-function SkillMarquee({
-  skills,
-  reverse = false,
-}: {
-  skills: Skill[];
-  reverse?: boolean;
-}) {
-  return (
-    <motion.div
-      className="flex gap-3 sm:gap-6 md:gap-8 w-max"
-      animate={{
-        x: reverse ? ["-50%", "0%"] : ["0%", "-50%"],
-      }}
-      transition={{
-        repeat: Infinity,
-        repeatType: "loop",
-        duration: 30,
-        ease: "linear",
-      }}
-      whileHover={{ animationPlayState: "paused" }}
-    >
-      {duplicate(skills).map((skill, i) => (
-        <div
-          key={`${skill.name}-${i}`}
-          className="group relative flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 rounded-xl
-                     bg-linear-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20
-                     border border-orange-300/50 dark:border-orange-500/30
-                     cursor-pointer hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
-        >
-          <skill.icon
-            className="text-lg sm:text-xl shrink-0 text-orange-500 group-hover:text-red-500 transition-all duration-300"
-          />
-          <span className="text-xs sm:text-sm whitespace-nowrap">{skill.name}</span>
-
-          {/* Tooltip */}
-          <div
-            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3
-                       hidden group-hover:block
-                       px-3 py-1 rounded-md text-xs
-                       bg-black text-white whitespace-nowrap"
-          >
-            {skill.description}
-          </div>
-        </div>
-      ))}
-    </motion.div>
-  );
-}
-
+/**
+ * The stack as an asymmetric grid of groups. Pointing at a group mutes the
+ * others, the same isolation the project graph uses.
+ */
 export default function Skills() {
+  const [active, setActive] = useState<string | null>(null);
+
   return (
-    <section id="skills" className="overflow-hidden px-4 sm:px-6 py-8 sm:py-10 md:py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-6 sm:mb-8 md:mb-10">
-          <div className="w-1 h-12 bg-linear-to-b from-orange-500 to-red-500 rounded-full"></div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-linear-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-            Skills
-          </h2>
-        </div>
+    <Block
+      id="skills"
+      title="What I work with."
+      lead="Grouped by what I actually reach for, not by how long the list looks."
+    >
+      <ul
+        className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-6"
+        onPointerLeave={() => setActive(null)}
+        onPointerMove={(event) => {
+          const target = (event.target as HTMLElement).closest<HTMLElement>("[data-spot]");
+          if (!target) return;
+          const rect = target.getBoundingClientRect();
+          target.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+          target.style.setProperty("--my", `${event.clientY - rect.top}px`);
+        }}
+      >
+        {ordered.map((group, index) => {
+          const featured = group.label === FEATURED;
+          const muted = active !== null && active !== group.label;
+          return (
+            <motion.li
+              key={group.label}
+              data-spot
+              initial={{ opacity: 0, y: 30, scale: 0.97 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.7, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              onPointerEnter={() => setActive(group.label)}
+              className={`card spot-card glow-hover overflow-hidden p-6 transition-[opacity,filter] duration-300 md:p-7 ${
+                SPAN[group.label] ?? "md:col-span-3"
+              } ${muted ? "opacity-85 saturate-[0.3]" : ""}`}
+            >
+              {featured ? (
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-violet/35 blur-3xl"
+                />
+              ) : null}
 
-        <div className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
-          {/* Core Stack */}
-          <div>
-            <p className="mb-3 sm:mb-4 text-xs sm:text-sm uppercase tracking-wide text-neutral-500">
-              Core Stack
-            </p>
-            <div className="overflow-hidden">
-              <SkillMarquee skills={coreSkills} />
-            </div>
-          </div>
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="semi-expanded text-[1.45rem] font-bold leading-tight tracking-[-0.02em] text-ink">
+                    {group.label}
+                  </h3>
+                  <p className="mt-1 text-sm text-ink-3">{group.note}</p>
+                </div>
+                <span className="semi-expanded text-value font-bold text-lime" data-numeric>
+                  {String(group.items.length).padStart(2, "0")}
+                  <span className="sr-only"> skills</span>
+                </span>
+              </div>
 
-          {/* Backend & Infra */}
-          <div>
-            <p className="mb-3 sm:mb-4 text-xs sm:text-sm uppercase tracking-wide text-neutral-500">
-              Backend & Infra
-            </p>
-            <div className="overflow-hidden">
-              <SkillMarquee skills={infraSkills} reverse />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+              <ul className="relative mt-6 flex flex-wrap gap-2">
+                {group.items.map((item, chip) => (
+                  <motion.li
+                    initial={{ opacity: 0, y: 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.25 + index * 0.08 + chip * 0.035 }}
+                    key={item.name}
+                    className={`inline-flex min-h-9 items-center gap-2 rounded-full border px-3.5 text-sm ${
+                      featured
+                        ? "border-violet-edge bg-violet-dim text-ink"
+                        : "border-line bg-raise-2/60 text-ink-2"
+                    }`}
+                  >
+                    {item.icon ? (
+                      <item.icon
+                        className={`size-3.5 shrink-0 ${featured ? "text-violet-soft" : "text-ink-3"}`}
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    {item.name}
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.li>
+          );
+        })}
+      </ul>
+    </Block>
   );
 }

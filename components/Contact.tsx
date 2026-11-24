@@ -1,81 +1,76 @@
+import { PiDownloadSimpleBold, PiFilePdfBold } from "react-icons/pi";
+import { profile, socials } from "@/lib/data";
 import ContactForm from "./ContactForm";
+import Block from "./ui/Block";
+import Button from "./ui/Button";
 
+/**
+ * Contact: the form in a lit card, with direct email, socials and the resume
+ * beside it.
+ */
 export default function Contact() {
   return (
-    <section
+    <Block
       id="contact"
-      className="relative py-8 sm:py-12 md:py-20 bg-neutral-950 border-t border-neutral-800 px-4 sm:px-6"
+      title="Start a conversation."
+      lead="Hiring, collaborating, or comparing notes on agent evaluation: either route below reaches me."
     >
-      <div className="max-w-3xl mx-auto">
-        {/* Heading */}
-        <div className="flex items-center gap-4 mb-6 sm:mb-8 md:mb-10">
-          <div className="w-1 h-12 bg-linear-to-b from-indigo-500 to-violet-500 rounded-full"></div>
-          <h2 className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-indigo-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
-            Let's talk
-          </h2>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="card p-6 md:p-8">
+          <ContactForm />
         </div>
 
-        <p className="mt-3 sm:mt-4 text-neutral-400 text-sm sm:text-base md:text-lg">
-          Have a project in mind, a question, or just want to say hi?
-          Drop a message and I’ll get back to you.
-        </p>
-
-        {/* Contact Form */}
-        <form className="mt-6 sm:mt-8 space-y-5 sm:space-y-6">
-          {/* Name */}
+        <div className="space-y-10">
           <div>
-            <label className="block text-xs sm:text-sm text-neutral-300 mb-2">
-              Your Name
-            </label>
-            <input
-              type="text"
-              placeholder="XYZ Kumar"
-              className="w-full rounded-lg sm:rounded-xl bg-neutral-900 border border-neutral-800 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-xs sm:text-sm text-neutral-300 mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              placeholder="XYZ@example.com"
-              className="w-full rounded-lg sm:rounded-xl bg-neutral-900 border border-neutral-800 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
-            />
-          </div>
-
-          {/* Message */}
-          <div>
-            <label className="block text-xs sm:text-sm text-neutral-300 mb-2">
-              Message
-            </label>
-            <textarea
-              rows={4}
-              placeholder="Tell me about your idea..."
-              className="w-full rounded-lg sm:rounded-xl bg-neutral-900 border border-neutral-800 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600 resize-none"
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4">
-            <button
-              type="submit"
-              className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white text-black text-sm sm:text-base font-medium hover:bg-neutral-200 transition"
-            >
-              Send Message
-            </button>
-
+            <h3 className="legend text-ink-3">Direct</h3>
             <a
-              href="tushar.gautam.dev@email.com"
-              className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-neutral-700 text-neutral-300 text-sm sm:text-base hover:border-neutral-500 hover:text-white transition text-center"
+              href={`mailto:${profile.email}`}
+              className="ink-link semi-expanded mt-4 inline-block break-all text-h3 font-semibold"
             >
-              Email Directly
+              {profile.email}
             </a>
+            <p className="mt-3 text-sm text-ink-3">
+              Based in {profile.location}.
+            </p>
           </div>
-        </form>
+
+          <div>
+            <h3 className="legend text-ink-3">Elsewhere</h3>
+            {/* A row of header pins, one per network */}
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {socials.map((social) => (
+                <li key={social.label}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    title={social.label}
+                    className="group grid size-12 place-items-center rounded-full border border-line-strong text-ink-2 transition-colors duration-150 hover:border-violet-edge hover:bg-violet-dim hover:text-ink"
+                  >
+                    <social.icon className="size-[1.15rem]" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="legend text-ink-3">Resume</h3>
+            <p className="mt-3 text-sm text-ink-2 text-pretty">
+              Full history, education, and certifications on one page.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button href="/resume" variant="ghost" icon={PiFilePdfBold}>
+                View
+              </Button>
+              <Button href={profile.resumePath} variant="ghost" icon={PiDownloadSimpleBold} download>
+                Download
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </Block>
   );
 }

@@ -1,102 +1,152 @@
 "use client";
 
+import { useState } from "react";
+import { PiWarningCircleBold } from "react-icons/pi";
+import Button from "./ui/Button";
+
+type Status = "idle" | "submitting" | "success" | "error";
+
+const FIELD =
+  "w-full rounded-pad border border-ink-3/75 bg-ground px-3.5 py-3 text-body text-ink " +
+  "placeholder:text-ink-3 transition-colors duration-150 hover:border-violet-edge focus:border-lime " +
+  "disabled:opacity-60";
+
+const LABEL = "legend block text-ink-2";
+
 export default function ContactForm() {
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    await fetch("https://formspree.io/f/xvzrvvkp", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    const form = event.currentTarget;
+    setStatus("submitting");
+    setError("");
 
-    // Clear form fields after successful submit
-    form.reset();
+    try {
+      const response = await fetch("https://formspree.io/f/xvzrvvkp", {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" },
+      });
+
+      /* The original version ignored the response entirely, so a rejected
+         submission was indistinguishable from a successful one. */
+      if (!response.ok) {
+        throw new Error(`Form service returned ${response.status}`);
+      }
+
+      form.reset();
+      setStatus("success");
+    } catch (cause) {
+      setStatus("error");
+      setError(
+        cause instanceof TypeError
+          ? "Could not reach the network. Check your connection and try again."
+          : "Something went wrong sending that. Email me directly instead.",
+      );
+    }
   };
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="mt-6 sm:mt-8 space-y-5 sm:space-y-6"
-    >
-      {/* Hidden metadata */}
-      <input
-        type="hidden"
-        name="_subject"
-        value="New Portfolio Inquiry"
-      />
+  if (status === "success") {
+    return (
+      <div
+        role="status"
+        className="flex items-start gap-4 rounded-ic border border-line-strong bg-raise-1 p-6"
+      >
+        <span className="led mt-2 shrink-0" data-state="pass" aria-hidden="true" />
+        <div>
+          <p className="semi-expanded text-h3 font-bold text-ink">Message sent</p>
+          <p className="mt-1.5 text-sm text-ink-2">
+            I&apos;ll get back to you at the address you provided.
+          </p>
+          <button
+            type="button"
+            onClick={() => setStatus("idle")}
+            className="ink-link mt-4 text-sm"
+          >
+            Send another
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-      {/* Honeypot */}
+  const submitting = status === "submitting";
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <input type="hidden" name="_subject" value="New portfolio enquiry" />
+
+      {/* Honeypot — bots fill it, humans never see it */}
       <input
         type="text"
         name="_gotcha"
-        className="hidden"
         tabIndex={-1}
         autoComplete="off"
+        aria-hidden="true"
+        className="hidden"
       />
 
-      {/* Name */}
       <div>
-        <label className="block text-xs sm:text-sm bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent mb-2 font-medium">
-          Your Name <span className="text-red-500">*</span>
+        <label htmlFor="contact-name" className={LABEL}>
+          Name <span className="text-ink-3">*</span>
         </label>
         <input
-          type="text"
+          id="contact-name"
           name="name"
+          type="text"
           required
-          placeholder="XYZ Kumar"
-          className="w-full rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-950/30 to-violet-950/30 border border-indigo-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition"
+          autoComplete="name"
+          placeholder="Your name"
+          disabled={submitting}
+          className={`mt-2 ${FIELD}`}
         />
       </div>
 
-      {/* Email */}
       <div>
-        <label className="block text-xs sm:text-sm bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent mb-2 font-medium">
-          Email Address <span className="text-red-500">*</span>
+        <label htmlFor="contact-email" className={LABEL}>
+          Email <span className="text-ink-3">*</span>
         </label>
         <input
-          type="email"
+          id="contact-email"
           name="email"
+          type="email"
           required
-          placeholder="xyz@example.com"
-          className="w-full rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-950/30 to-violet-950/30 border border-indigo-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition"
+          autoComplete="email"
+          placeholder="you@example.com"
+          disabled={submitting}
+          className={`mt-2 ${FIELD}`}
         />
       </div>
 
-      {/* Message */}
       <div>
-        <label className="block text-xs sm:text-sm bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent mb-2 font-medium">
-          Message <span className="text-red-500">*</span>
+        <label htmlFor="contact-message" className={LABEL}>
+          Message <span className="text-ink-3">*</span>
         </label>
         <textarea
+          id="contact-message"
           name="message"
-          rows={4}
+          rows={5}
           required
-          placeholder="Tell me about your idea..."
-          className="w-full rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-950/30 to-violet-950/30 border border-indigo-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 resize-none transition"
+          placeholder="What are you working on?"
+          disabled={submitting}
+          className={`mt-2 resize-y ${FIELD}`}
         />
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4">
-        <button
-          type="submit"
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-linear-to-r from-indigo-500 to-violet-600 text-white text-sm sm:text-base font-medium hover:shadow-lg hover:shadow-indigo-500/40 transition cursor-pointer"
-        >
-          Send Message
-        </button>
+      <div className="flex flex-wrap items-center gap-4 pt-1">
+        <Button type="submit" variant="lime" loading={submitting}>
+          {submitting ? "Sending" : "Send message"}
+        </Button>
 
-        <a
-          href="mailto:tushar.gautam.dev@email.com"
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-indigo-500/40 text-indigo-300 text-sm sm:text-base hover:border-indigo-500/70 hover:text-indigo-200 hover:shadow-lg hover:shadow-indigo-500/20 transition text-center"
-        >
-          Email Directly
-        </a>
+        {status === "error" ? (
+          <p role="alert" className="flex items-start gap-2 text-sm text-fail">
+            <PiWarningCircleBold className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            {error}
+          </p>
+        ) : null}
       </div>
     </form>
   );
