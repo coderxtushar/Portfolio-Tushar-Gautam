@@ -243,6 +243,11 @@ export type Project = {
   /* Null means no public URL yet — the UI renders no button rather than a dead link */
   liveUrl: string | null;
   repoUrl: string | null;
+  /* How the product works end to end, as a short chip row */
+  flow?: string[];
+  /* Full-page snapshot of the live site (1440 wide), scrolled inside a
+     browser frame on the Work section */
+  snapshot?: { src: string; height: number };
 };
 
 export const projects: Project[] = [
@@ -273,8 +278,10 @@ export const projects: Project[] = [
       { name: "Tailwind CSS", icon: SiTailwindcss },
     ],
     metric: { value: "423", label: "tests guarding the harness", source: "test functions counted in the repository" },
-    liveUrl: null,
+    liveUrl: "https://agent-labs.tushar-gautam-dev.workers.dev/",
     repoUrl: "https://github.com/coderxtushar/Agent-Labs",
+    flow: ["Sandbox", "Run agent", "Hidden tests", "Verdict"],
+    snapshot: { src: "/projects/agent-labs-full.jpg", height: 3600 },
   },
   {
     slug: "joborbit",
@@ -302,40 +309,72 @@ export const projects: Project[] = [
       { name: "GitHub Actions", icon: SiGithubactions },
     ],
     metric: { value: "22", label: "job sources, none of them scrapers", source: "source adapters counted in the repository" },
-    liveUrl: null,
+    liveUrl: "https://job-orbit-chi.vercel.app",
     repoUrl: "https://github.com/coderxtushar/JobOrbit",
+    flow: ["Import", "Deduplicate", "Score", "Prepare"],
+    snapshot: { src: "/projects/joborbit-full.jpg", height: 3600 },
   },
   {
     slug: "brandbot",
     designator: "U3",
     featured: true,
     title: "BrandBot",
-    tagline: "Autonomous LinkedIn AI agent",
-    period: "Jul 2025 — Aug 2025",
-    problem: "Brand research and content ideation eat hours of manual work every week.",
+    tagline: "AI content team for personal brands",
+    period: "Sep 2025, rebuilt Nov 2026",
+    problem:
+      "Writing on-brand, researched posts for several social platforms by hand is slow and inconsistent.",
     points: [
-      "Built an autonomous LinkedIn agent on LangChain, LangGraph, and Gemini that handles brand analysis, trend research, and content creation.",
-      "Designed a multi-agent workflow coordinating five or more specialised agents.",
-      "Integrated Tavily Search for real-time insight retrieval, reducing manual ideation effort by roughly 70%.",
+      "Built a LangGraph pipeline with five roles (profile, planner, writer, editor, art director) and Tavily research that turns one idea into posts for six platforms: LinkedIn, X, Threads, Instagram, Medium and YouTube Shorts.",
+      "Gave every platform its own write, review and rewrite loop, with a voice linter that sends machine-sounding drafts back for revision; runs pause for human approval and survive restarts through LangGraph checkpointers.",
+      "Shipped OAuth publishing to LinkedIn, X, Threads and Instagram with encrypted tokens and atomically claimed scheduled posts, on a FastAPI and SQLAlchemy backend with 45 endpoints and 150 tests in CI.",
     ],
     tech: [
       { name: "Python", icon: SiPython },
       { name: "FastAPI", icon: SiFastapi },
-      { name: "LangChain", icon: SiLangchain },
       { name: "LangGraph" },
       { name: "Gemini", icon: SiGooglegemini },
       { name: "Tavily Search" },
+      { name: "Next.js", icon: SiNextdotjs },
+      { name: "SQLAlchemy", icon: SiSqlalchemy },
+    ],
+    metric: { value: "6", label: "platforms written for, from one idea", source: "platform specs counted in the repository" },
+    liveUrl: "https://brandbot-studio.vercel.app",
+    repoUrl: "https://github.com/coderxtushar/BrandBot-Ai-Agent",
+    flow: ["Brand profile", "Plan + research", "Write + review", "Publish"],
+    snapshot: { src: "/projects/brandbot-full.jpg", height: 2200 },
+  },
+  {
+    slug: "rivera",
+    designator: "U4",
+    featured: true,
+    title: "Rivera",
+    tagline: "Course marketplace for instructors",
+    period: "Nov 2026",
+    problem:
+      "Instructors need one place to publish and sell courses, and students need one place to buy them, learn and get certified.",
+    points: [
+      "Built a course marketplace on an Express 5 and MongoDB API (68 route handlers) with a Next.js front end: students browse, buy, learn lesson by lesson and earn certificates with a public verify page.",
+      "Implemented JWT access tokens with rotating refresh tokens, where replaying a revoked token revokes its whole token family, plus student, instructor and admin roles with their own dashboards.",
+      "Integrated Razorpay and Stripe checkout behind one provider interface with verified signatures and webhooks, automatic refunds for orders that cannot be honoured, coupons and a configurable platform fee, covered by 55 integration tests.",
+    ],
+    tech: [
+      { name: "Node.js", icon: SiNodedotjs },
+      { name: "Express", icon: SiExpress },
+      { name: "MongoDB", icon: SiMongodb },
+      { name: "Next.js", icon: SiNextdotjs },
       { name: "React", icon: SiReact },
+      { name: "TypeScript", icon: SiTypescript },
       { name: "Tailwind CSS", icon: SiTailwindcss },
     ],
-    metric: { value: "~70%", label: "less manual ideation effort" },
-    liveUrl: null,
-    repoUrl: "https://github.com/coderxtushar/BrandBot-Ai-Agent",
+    metric: { value: "55", label: "integration tests on the API", source: "integration tests counted in the repository" },
+    liveUrl: "https://learn-rivera.vercel.app",
+    repoUrl: "https://github.com/coderxtushar/Rivera",
+    flow: ["Browse", "Checkout", "Learn", "Certificate"],
+    snapshot: { src: "/projects/rivera-full.jpg", height: 2216 },
   },
   {
     slug: "snap-ui",
-    designator: "U4",
-    featured: true,
+    designator: "U5",
     title: "Snap UI",
     tagline: "AI-driven UI builder",
     period: "Mar 2025 — Apr 2025",
@@ -353,12 +392,12 @@ export const projects: Project[] = [
       { name: "Tailwind CSS", icon: SiTailwindcss },
     ],
     metric: { value: "~60%", label: "less manual setup effort" },
-    liveUrl: null,
+    liveUrl: "https://snap-ui-lovat.vercel.app",
     repoUrl: "https://github.com/coderxtushar/Snap-UI",
   },
   {
     slug: "ci-cd-pipeline",
-    designator: "U5",
+    designator: "U6",
     title: "Jenkins to EC2 delivery pipeline",
     tagline: "Automated deployment infrastructure",
     period: "Apr 2025 — May 2025",
@@ -379,7 +418,7 @@ export const projects: Project[] = [
   },
   {
     slug: "parking-vehicle-detection",
-    designator: "U6",
+    designator: "U7",
     title: "Parking management",
     tagline: "Vehicle detection and recognition",
     period: "Sep 2024 — Nov 2024",
@@ -514,6 +553,23 @@ export const taglines: Record<string, string> = {
 export const ribbonTokens = {
   pipeline: ["Build", "Patch", "Execute", "Parse", "Judge"],
   verdicts: ["f2p", "p2p", "s2p", "n2p", "p2f"],
+  /* The moving band under the hero: what I work on and with */
+  keywords: [
+    "Agentic AI",
+    "LLM Evaluation",
+    "Agent Benchmarking",
+    "Evaluation Harnesses",
+    "Trajectory Analysis",
+    "Multi-Agent Systems",
+    "LangGraph",
+    "Python",
+    "TypeScript",
+    "Next.js",
+    "FastAPI",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+  ],
 };
 
 /* GitHub profile section */

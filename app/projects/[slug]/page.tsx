@@ -9,6 +9,7 @@ import {
 } from "react-icons/pi";
 import Board from "@/components/Board";
 import Button from "@/components/ui/Button";
+import LiveLink from "@/components/LiveLink";
 import Provenance from "@/components/ui/Provenance";
 import { projectBySlug, projects } from "@/lib/data";
 
@@ -106,7 +107,17 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
             <div className="p-6 md:p-10">
               <h1 className="semi-expanded text-h1 font-bold text-ink text-balance">
-                {project.title}
+                {project.liveUrl ? (
+                  <LiveLink
+                    href={project.liveUrl}
+                    preview={project.snapshot ? `/projects/${project.slug}.jpg` : null}
+                    className="transition-colors duration-200 hover:text-violet-soft"
+                  >
+                    {project.title}
+                  </LiveLink>
+                ) : (
+                  project.title
+                )}
               </h1>
               <p className="mt-4 max-w-[52ch] text-lead text-ink-2 text-pretty">{project.tagline}</p>
 

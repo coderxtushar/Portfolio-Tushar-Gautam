@@ -1,7 +1,6 @@
 import { projects, ribbonTokens } from "@/lib/data";
 
-/* Two bands that cross under the hero: the evaluation pipeline and its
-   verdicts on one, the work on the other. Pure CSS marquee; hover pauses it,
+/* A straight marquee band under the hero. Pure CSS; hover pauses it,
    reduced motion holds it still. Decorative, so hidden from assistive tech. */
 function Band({ items, tone, reverse, speed }: { items: string[]; tone: "lime" | "violet"; reverse?: boolean; speed: string }) {
   const loop = [...items, ...items, ...items, ...items];
@@ -34,17 +33,12 @@ function Band({ items, tone, reverse, speed }: { items: string[]; tone: "lime" |
 }
 
 export default function Ribbon() {
-  const pipeline = ribbonTokens.pipeline.flatMap((step, index) => [step, ribbonTokens.verdicts[index] ?? ""]).filter(Boolean);
+  /* One straight band: technical keywords and skills, then the work */
   const work = projects.filter((project) => project.featured).map((project) => project.title);
 
   return (
-    <div aria-hidden="true" className="relative isolate overflow-hidden py-14 md:py-20">
-      <div className="-mx-8 -rotate-2">
-        <Band items={pipeline} tone="lime" speed="42s" />
-      </div>
-      <div className="-mx-8 -mt-3 rotate-[1.5deg]">
-        <Band items={work} tone="violet" reverse speed="50s" />
-      </div>
+    <div aria-hidden="true" className="relative isolate overflow-hidden py-10 md:py-14">
+      <Band items={[...ribbonTokens.keywords, ...work]} tone="lime" speed="80s" />
     </div>
   );
 }
