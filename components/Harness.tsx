@@ -13,6 +13,8 @@ const DONE = pipeline.length;
 const PARSE = 3;
 const JUDGE = 4;
 const STEP_MS = 720;
+/* How long autoplay holds each verdict before running the other candidate */
+const AUTO_HOLD_MS = 3200;
 
 const SHORT: Record<TestState, string> = { pass: "p", fail: "f", skip: "s", none: "n" };
 const LABEL: Record<TestState, string> = { pass: "Pass", fail: "Fail", skip: "Skip", none: "New" };
@@ -80,7 +82,58 @@ export default function Harness() {
     }
   }, [reduceMotion]);
 
+  /* Autoplay: while the panel is on screen and the visitor hasn't taken over,
+     run the real fix, hold the verdict, run the lucky patch, and repeat. Any
+     click on a candidate or Run hands control to the visitor for good. */
+  const panelRef = useRef<HTMLDivElement>(null);
+  const autoTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const userControl = useRef(false);
+
+  const stopAuto = useCallback(() => {
+    autoTimers.current.forEach(clearTimeout);
+    autoTimers.current = [];
+  }, []);
+
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el || reduceMotion) return;
+
+    const cycle = (id: CandidateId) => {
+      setCandidate(id);
+      run();
+      autoTimers.current.push(
+        setTimeout(() => cycle(id === "fix" ? "lucky" : "fix"), DONE * STEP_MS + AUTO_HOLD_MS),
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (userControl.current) return;
+        if (entry.isIntersecting) {
+          stopAuto();
+          cycle("fix");
+        } else {
+          stopAuto();
+          clearTimers();
+          setStage(DONE);
+        }
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      stopAuto();
+    };
+  }, [run, reduceMotion, stopAuto]);
+
+  const takeControl = () => {
+    userControl.current = true;
+    stopAuto();
+  };
+
   const choose = (id: CandidateId) => {
+    takeControl();
     if (id === candidate) return;
     clearTimers();
     setCandidate(id);
@@ -105,7 +158,10 @@ export default function Harness() {
   return (
     /* reducedMotion="user": Framer's own transitions honour the OS setting too */
     <MotionConfig reducedMotion="user">
-    <div className="grid-panel relative overflow-hidden rounded-card border border-line-strong shadow-[0_40px_100px_-40px_rgba(123,97,255,0.45)]">
+    <div
+      ref={panelRef}
+      className="grid-panel relative overflow-hidden rounded-card border border-line-strong shadow-[0_40px_100px_-40px_rgba(123,97,255,0.45)]"
+    >
       {/* Fixture header */}
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line px-5 py-3.5">
         <p className="legend text-ink">
@@ -159,7 +215,10 @@ export default function Harness() {
 
           <button
             type="button"
-            onClick={run}
+            onClick={() => {
+              takeControl();
+              run();
+            }}
             disabled={running}
             data-variant="lime"
             className="pad-btn"
