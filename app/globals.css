@@ -697,6 +697,12 @@
     margin: 11mm 12mm;
   }
 
+  /* Light canvas for paper: the dark colour scheme would otherwise paint the
+     page margins dark when background graphics are printed */
+  html {
+    color-scheme: light !important;
+  }
+
   html,
   body,
   body > div,

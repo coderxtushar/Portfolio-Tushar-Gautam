@@ -1,7 +1,8 @@
 /* The resume, as HTML. Based on public/resume/Tushar_Gautam_resume.pdf
-   (Oct 2026), plus Agent Labs and JobOrbit, which the PDF predates. Their
-   bullets restate only facts verified in each repository (Nov 2026). The
-   phone number is deliberately omitted. */
+   (Oct 2026), plus Agent Labs, JobOrbit and Rivera, which the PDF predates,
+   and BrandBot rewritten from its current code. Their bullets restate only
+   facts verified in each repository (Nov 2026). The phone number is
+   deliberately omitted. */
 
 export const resume = {
   name: "Tushar Gautam",
@@ -41,7 +42,9 @@ export const resume = {
   projects: [
     {
       name: "Agent Labs",
-      href: "https://github.com/coderxtushar/Agent-Labs",
+      live: "https://agent-labs.tushar-gautam-dev.workers.dev/",
+      repo: "https://github.com/coderxtushar/Agent-Labs",
+      preview: "/projects/agent-labs.jpg",
       stack: "Python, FastAPI, Docker, React, TypeScript, SQLAlchemy",
       points: [
         "Built a local-first evaluation harness for coding agents that runs each agent in an isolated Docker sandbox (no network, all capabilities dropped, CPU, memory and process limits) and grades its patch with hidden acceptance tests injected only after the patch is captured.",
@@ -51,7 +54,9 @@ export const resume = {
     },
     {
       name: "JobOrbit",
-      href: "https://github.com/coderxtushar/JobOrbit",
+      live: "https://job-orbit-chi.vercel.app",
+      repo: "https://github.com/coderxtushar/JobOrbit",
+      preview: "/projects/joborbit.jpg",
       stack: "Python, FastAPI, Streamlit, SQLAlchemy, Alembic",
       points: [
         "Built a local-first job-search assistant that pulls listings from 22 sources (public ATS APIs, open feeds, read-only email alerts) without scraping, with three-step cross-source deduplication.",
@@ -60,20 +65,27 @@ export const resume = {
       ],
     },
     {
-      name: "BrandBot AI Agent",
-      stack: "Python, FastAPI, LangChain, React.js, Tailwind CSS",
+      name: "BrandBot",
+      live: "https://brandbot-studio.vercel.app",
+      repo: "https://github.com/coderxtushar/BrandBot-Ai-Agent",
+      preview: "/projects/brandbot.jpg",
+      stack: "Python, FastAPI, LangGraph, Gemini, Tavily, Next.js, SQLAlchemy",
       points: [
-        "Built an autonomous LinkedIn AI agent using LangChain, LangGraph, and Google Gemini that automates brand analysis, trend research and content creation.",
-        "Designed a multi-agent workflow with 5+ specialized agents, integrated Tavily Search for real-time insights and reduced manual content ideation effort by ~70%.",
+        "Built a LangGraph content pipeline with five roles (profile, planner, writer, editor, art director) and Tavily research that turns one idea into on-brand posts for six platforms.",
+        "Gave each platform a write, review and rewrite loop with a voice linter that sends machine-sounding drafts back; runs pause for human approval and survive restarts through LangGraph checkpointers.",
+        "Shipped OAuth publishing to LinkedIn, X, Threads and Instagram with encrypted tokens and scheduled posts, on a FastAPI backend with 45 endpoints and 150 tests in CI.",
       ],
     },
     {
-      name: "Snap UI",
-      stack: "Next.js, React.js, TypeScript, Tailwind CSS",
+      name: "Rivera",
+      live: "https://learn-rivera.vercel.app",
+      repo: "https://github.com/coderxtushar/Rivera",
+      preview: "/projects/rivera.jpg",
+      stack: "Node.js, Express, MongoDB, Next.js, TypeScript, Tailwind CSS",
       points: [
-        "Developed a powerful AI-driven UI builder that enables users to generate and customise modern web interfaces effortlessly.",
-        "Implemented dynamic component rendering, real-time editing, and AI-assisted design suggestions using Next.js, Tailwind CSS and Convex backend.",
-        "Automated workflows for auth, component generation, and previews, reducing manual setup effort by ~60%.",
+        "Built a course marketplace on an Express 5 and MongoDB API (68 route handlers) with a Next.js front end, where students buy courses, learn lesson by lesson and earn verifiable certificates.",
+        "Implemented JWT authentication with rotating refresh tokens that revoke the whole token family on replay, plus student, instructor and admin roles with their own dashboards.",
+        "Integrated Razorpay and Stripe checkout behind one provider interface with verified webhooks, automatic refunds, coupons and a configurable platform fee, covered by 55 integration tests.",
       ],
     },
   ],

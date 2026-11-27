@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { PiArrowLeftBold, PiDownloadSimpleBold, PiEnvelopeSimpleBold } from "react-icons/pi";
 import Board from "@/components/Board";
 import PrintButton from "@/components/PrintButton";
+import LiveLink from "@/components/LiveLink";
 import Signature from "@/components/Signature";
 import Button from "@/components/ui/Button";
 import { profile } from "@/lib/data";
@@ -156,19 +157,23 @@ export default function ResumePage() {
             {resume.projects.map((project) => (
               <div key={project.name} className="print-keep mt-4">
                 <div className="grid gap-x-6 sm:grid-cols-[auto_1fr]">
-                  <p className="text-[1.1875rem] font-semibold text-paper-ink">
-                    {"href" in project && project.href ? (
-                      <a
-                        href={project.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline decoration-paper-rule underline-offset-4 hover:text-paper-accent"
-                      >
-                        {project.name}
-                      </a>
-                    ) : (
-                      project.name
-                    )}
+                  <p className="flex flex-wrap items-baseline gap-x-3 text-[1.1875rem] font-semibold text-paper-ink">
+                    {/* Name opens the deployed site; hover shows a preview of it */}
+                    <LiveLink
+                      href={project.live}
+                      preview={project.preview}
+                      className="underline decoration-paper-rule underline-offset-4 transition-colors hover:text-paper-accent hover:decoration-paper-accent"
+                    >
+                      {project.name}
+                    </LiveLink>
+                    <a
+                      href={project.repo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="no-print text-[0.875rem] font-medium text-paper-ink-2 underline decoration-paper-rule underline-offset-4 hover:text-paper-accent"
+                    >
+                      Code
+                    </a>
                   </p>
                   <p className="text-[1.0625rem] italic sm:text-right">{project.stack}</p>
                 </div>
@@ -191,7 +196,7 @@ export default function ResumePage() {
         </article>
 
         <p className="no-print mt-5 text-center text-sm text-ink-3">
-          Hover over the name to sign it. Prefer a file? Use Download PDF above.
+          Prefer a file? Use Download PDF above.
         </p>
       </div>
     </Board>
